@@ -1,23 +1,21 @@
 import random
-
 from models import *
 from viewer import *
 
 
 # elements average
-def avg(elements):
-    return sum(elements) / len(elements)
+def avg(elements: list):
+    return np.average(elements)
 
 
 # standard deviation
-def std(elements):
-    avg_val = avg(elements)
-    return math.sqrt(sum([(x - avg_val)**2 for x in elements]) / len(elements))
+def std(elements: list):
+    return np.std(elements)
 
 
 # returns random point (vector)
 def point(n):
-    return [random.random() for _ in range(n)]  # n = number of dimensions (point vector size)
+    return np.random.random(n)
 
 
 # get one point from points list
@@ -25,22 +23,19 @@ def get_point():
     return points[random.randint(0, len(points) - 1)]
 
 
-# get pair of points from points list
+# get a pair of points from points list
 def get_pair():
     point1 = get_point()
     point2 = get_point()
-    while point1 == point2:
+    while np.array_equal(point1, point2):
         point2 = get_point()
     return point1, point2
 
 
-# appends points to list of points
+# Append points to list of points
 def draw_points(n):
     for p in range(no_points):
-        x = point(n)
-        while x in points:
-            x = point(n)
-        points.append(x)
+        points.append(point(n))
 
 
 # appends angle between two vectors in degrees to list
@@ -74,13 +69,12 @@ def calculate_distance_to_avg():
     distances.append(abs(dist1 - dist2) / avg([dist1, dist2]) * 100)
 
 
-def run_test_angle(max_dim=500, no_tests=1000):
+def run_test_angle(max_dim=500, no_tests=2000):
     angles_avg = []
     angles_std = []
     for d in range(2, max_dim):
-        # first of all we have to draw points
+        # first we have to draw points
         draw_points(d)
-
         for _ in range(no_tests):
             calculate_angle()
         angles_avg.append(avg(angles))
@@ -92,11 +86,11 @@ def run_test_angle(max_dim=500, no_tests=1000):
     plot_angles([x for x in range(2, max_dim)], angles_avg, angles_std, max_dim)
 
 
-def run_test_ratio(max_dim=500, no_tests=100):
+def run_test_ratio(max_dim=300, no_tests=100):
     ratios_avg = []
     ratios_std = []
     for d in range(2, max_dim):
-        # first of all we have to draw points
+        # first we have to draw points
         draw_points(d)
 
         for _ in range(no_tests):
@@ -110,11 +104,11 @@ def run_test_ratio(max_dim=500, no_tests=100):
     plot_ratios([x for x in range(2, max_dim)], ratios_avg, ratios_std, max_dim)
 
 
-def run_test_dist(max_dim=500, no_tests=1000):
+def run_test_dist(max_dim=500, no_tests=2000):
     dist_avg = []
     dist_std = []
     for d in range(2, max_dim):
-        # first of all we have to draw points
+        # first we have to draw points
         draw_points(d)
 
         for _ in range(no_tests):
@@ -135,7 +129,7 @@ def clear_lists():
 
 
 if __name__ == "__main__":
-    no_points = 100
+    no_points = 1000
 
     points = []  # generated points list
     angles = []  # angles between two vectors (len(list) == no_tests)

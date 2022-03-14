@@ -10,7 +10,9 @@ def plot_angles(x, avg, err, max_dim=500):
     plot.legend(['średnia i odchylenie standardowe'], loc='upper right', prop={'size': 15})
     plot.xlim((0, max_dim))
     plot.grid()
+    print('Saving PNG...')
     plot.savefig('angle.png')
+    print('angle.png saved')
 
 
 def plot_ratios(x, avg, err, max_dim=500):
@@ -22,7 +24,9 @@ def plot_ratios(x, avg, err, max_dim=500):
     plot.legend(['średnia i odchylenie standardowe'], loc='upper right', prop={'size': 15})
     plot.xlim((0, max_dim))
     plot.grid()
+    print('Saving PNG...')
     plot.savefig('inside.png')
+    print('inside.png saved')
 
 
 def plot_distances(x, avg, err, max_dim=500):
@@ -34,4 +38,6 @@ def plot_distances(x, avg, err, max_dim=500):
     plot.legend(['średnia i odchylenie standardowe'], loc='upper right', prop={'size': 15})
     plot.xlim((0, max_dim))
     plot.grid()
+    print('Saving PNG...')
     plot.savefig('ratio.png')
+    print('ratio.png saved')

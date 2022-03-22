@@ -1,11 +1,6 @@
 import numpy as np
 
 
-# converts radians to degrees
-def deg(radians):
-    return (radians * 180) / np.pi
-
-
 class Hypersphere:
     def __init__(self, p1, p2):
         self.central_point = p1

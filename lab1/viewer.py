@@ -11,7 +11,7 @@ def plot_angles(x, avg, err, max_dim=500):
     plot.xlim((0, max_dim))
     plot.grid()
     print('Saving PNG...')
-    plot.savefig('angle.png')
+    plot.savefig('./charts/angle_chart.png')
     print('angle.png saved')
 
 
@@ -25,7 +25,7 @@ def plot_ratios(x, avg, err, max_dim=500):
     plot.xlim((0, max_dim))
     plot.grid()
     print('Saving PNG...')
-    plot.savefig('inside.png')
+    plot.savefig('./charts/inside.png')
     print('inside.png saved')
 
 
@@ -39,5 +39,5 @@ def plot_distances(x, avg, err, max_dim=500):
     plot.xlim((0, max_dim))
     plot.grid()
     print('Saving PNG...')
-    plot.savefig('ratio.png')
+    plot.savefig('./charts/ratio.png')
     print('ratio.png saved')

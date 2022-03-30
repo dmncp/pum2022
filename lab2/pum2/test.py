@@ -1,49 +1,104 @@
-
-# Principal Component Analysis
-from numpy import array
+import matplotlib.pyplot as plt
+import numpy as np
+# import seaborn as sns
+# import cv2
 from sklearn.decomposition import PCA
 
+from keras.datasets import fashion_mnist
+(trainX, trainy), (testX, testy) = fashion_mnist.load_data()
+
+
+class Data():
+    shirts = []
+    t_shirts = []
+    coats = []
+
+    def __init__(self):
+        shirts = self.shirts
+        t_shirts = self.t_shirts
+        coats = self.coats
+        while len(shirts) < 20 or len(t_shirts) < 20 or len(coats) < 20:
+            i = np.random.randint(len(testy))
+            if testy[i] == 6 and len(shirts) < 20:
+                shirts.append(testX[i])
+            elif testy[i] == 0 and len(t_shirts) < 20:
+                t_shirts.append(testX[i])
+            elif testy[i] == 4 and len(coats) < 20:
+                coats.append(testX[i])
+
+
+def show_variance(var):
+    plt.plot(var, '.', markersize=1)
+    plt.title('Wariancja')
+    plt.ylabel('wartość')
+    plt.xlabel('cecha')
+    plt.show()
+
+
+def show_cov(cov):
+    plt.figure(figsize=(6,6))
+    plt.imshow(cov, 'gray')
+    plt.axis('off')
+    plt.title('Macierz kowariancji')
+    plt.show()
 
 
 if __name__ == '__main__':
-    # define a matrix
-    A = array([[1, 2], [3, 4], [5, 6]])
-    # create the PCA instance
-    pca = PCA(2)
-    # fit on data
-    pca.fit(A)
-    # access values and vectors
-    print(pca.components_, end='\n\n')  # == print(vectors)
-    print(pca.explained_variance_, end='\n\n')  # == print(values)
-    # transform data
-    B = pca.transform(A)
-    print(pca.get_covariance(), end='\n\n')  # print(V)
-    print(B, end='\n\n')  # == print(P.T)
-    print(pca.mean_, end='\n\n')  # == print(M)
+    data = Data()
+    fig, ax = plt.subplots(3, 20, figsize=(20, 4))
+    for i in range(20):
+        ax[0][i].imshow(data.shirts[i], 'gray')
+        ax[0][i].axis('off')
 
-    print("+++++++++++++++++++++")
+        ax[1][i].imshow(data.t_shirts[i], 'gray')
+        ax[1][i].axis('off')
 
-from numpy import array
-from numpy import mean
-from numpy import cov
-from numpy.linalg import eig
-# define a matrix
-A = array([[1, 2], [3, 4], [5, 6]])
-print(A)
-# calculate the mean of each column
-M = mean(A.T, axis=1)
-print(M)
-# center columns by subtracting column means
-C = A - M
-print(C)
-# calculate covariance matrix of centered matrix
-V = cov(C.T)
-print(V)
-# eigendecomposition of covariance matrix
-values, vectors = eig(V)
-print(vectors)
-print(values)
-# project data
-P = vectors.T.dot(C.T)
-print(P.T)
+        ax[2][i].imshow(data.coats[i], 'gray')
+        ax[2][i].axis('off')
 
+    # plt.subplots_adjust(wspace=0, hspace=0)
+
+    X = []
+    for i in range(20):
+        X.append(np.asarray(data.shirts[i]).flatten())
+        X.append(np.asarray(data.t_shirts[i]).flatten())
+        X.append(np.asarray(data.coats[i]).flatten())
+    X = np.asarray(X)
+
+    pca1 = PCA()
+    pca1.fit(X)
+    pca2 = PCA(n_components=3)
+    pca2.fit_transform(X)
+
+    cov_before = np.cov(X.T)
+    print(cov_before)
+
+    cov_after = pca2.get_covariance()
+    print(cov_after)
+
+    print('Macierz kowariancji przed transformacją:')
+    show_cov(cov_before)
+    print('min =',np.min(cov_before))
+    print('max =', np.max(cov_before))
+    print('mean =', np.mean(cov_before))
+    print('std =', np.std(cov_before))
+
+
+    print('Macierz kowariancji po transformacji:')
+    show_cov(cov_after)
+    print('min =',np.min(cov_after))
+    print('max =', np.max(cov_after))
+    print('mean =', np.mean(cov_after))
+    print('std =', np.std(cov_after))
+
+    variance_before = []
+    for i in range(784):
+        variance_before.append(cov_before[i,i])
+    print('Wariancja przed transformacją:')
+    show_variance(variance_before)
+
+    variance_after = []
+    for i in range(784):
+        variance_after.append(cov_after[i,i])
+    print('Wariancja po transformacji:')
+    show_variance(variance_after)

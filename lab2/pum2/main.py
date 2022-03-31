@@ -111,14 +111,14 @@ def visualization_2d():
     plt.scatter(set1_y, set1_x, marker='o', color='red')
     plt.scatter(set2_y, set2_x, marker='o', color='green')
     plt.scatter(set3_y, set3_x, marker='o', color='blue')
-    plt.title("czerwony:kubki, zielony:szklanki, niebieski:kieliszki")
+    plt.title("czerwony:sandaly, zielony:trampki, niebieski:trapery")
     plt.savefig('./outputs/visualization2d.png')
     print('2d visualization generated successfully')
 
 
 # np.set_printoptions(threshold=sys.maxsize)
 if __name__ == "__main__":
-    photo_size = 28  # 28x28 px
+    photo_size = 100  # 28x28 px
     dataset_path = "./dataset/"
     datasets_vectors, data_sets = get_pixel_vectors()  # we get a list of 60 points in 10_000 dimensional space
 

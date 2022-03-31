@@ -26,7 +26,7 @@ def convert_to_grayscale(img_path):
 These functions should only be run when the starting data set has not been preprocessed.
 '''
 if __name__ == "__main__":
-    photo_size = 28  # 28x28 px
+    photo_size = 100  # 28x28 px
     dataset_path = "./dataset/"
 
     # for all sets (set1, set2, set3)

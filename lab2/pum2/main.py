@@ -11,11 +11,11 @@ If you use a different dataset, remember to run the photo_processing.py script f
 '''
 
 
-def convert_vector_to_matrix(vector):
+def convert_vector_to_matrix(vector, title):
     matrix = np.reshape(vector, (photo_size, photo_size))
     matrix = np.array(matrix, dtype=np.uint8)
     img = Image.fromarray(matrix)
-    img.save('./outputs/mean_img.png')
+    img.save(title)
 
 
 def convert_matrix_to_vector(img_path):
@@ -118,9 +118,9 @@ def visualization_2d():
 
 # np.set_printoptions(threshold=sys.maxsize)
 if __name__ == "__main__":
-    photo_size = 100  # 28x28 px
+    photo_size = 64  # 28x28 px
     dataset_path = "./dataset/"
-    datasets_vectors, data_sets = get_pixel_vectors()  # we get a list of 60 points in 10_000 dimensional space
+    datasets_vectors, data_sets = get_pixel_vectors()  # we get a list of 60 points in photo_size**2 dimensional space
 
     pca, pca_fit = pca_with_transform(3, datasets_vectors)  # Fit the model with X axis (centering) and transform
 
@@ -141,14 +141,17 @@ if __name__ == "__main__":
     save_variance_img(var_after, "Wariancja po transformacji", './outputs/var_after.png')
 
     # Save image from mean_vector
-    convert_vector_to_matrix(pca.mean_)
+    convert_vector_to_matrix(pca.mean_, './outputs/mean_img.png')
 
-    # new principal components
-    # todo how to sort it ?
-    principal_components = pca_fit  # that is the same
+    # principal components
+    principal_components = pca.components_  # that is the same
+    fig, axes = plt.subplots(3, 3, sharex=True, sharey=True, figsize=(8, 10))
+    for idx, pc in enumerate(principal_components):
+        axes[idx % 3][idx // 3].imshow(pc.reshape(photo_size, photo_size), cmap="gray")
+        axes[idx % 3][idx // 3].axis('off')
+    plt.savefig("./outputs/pc.png")
 
     # reduction of dimensions
-    # todo: how to set zeros into unimportant features?
     reduction(3)
     reduction(9)
     reduction(27)

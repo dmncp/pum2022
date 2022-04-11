@@ -1,5 +1,6 @@
 from matplotlib.colors import ListedColormap
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from dataset_preparing import get_dataset
 from sklearn import svm
@@ -10,10 +11,11 @@ import matplotlib.pyplot as plt
 def plot_decision_function(classifier, title):
     h = 0.01
 
-    X_train, X_test, y_train, y_test = train_test_split(x, y)
+    X = StandardScaler().fit_transform(x)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-    x_min, x_max = x[:, 0].min() - 0.5, x[:, 0].max() + 0.5
-    y_min, y_max = x[:, 1].min() - 0.5, x[:, 1].max() + 0.5
+    x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
+    y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
 
     # just plot the dataset first
@@ -68,30 +70,54 @@ def plot_decision_function(classifier, title):
 
 
 def plot_support_vectors(vectors, filename):
-    set1, set2 = [], []
-    for v in vectors:
-        if v in np.array(dataset.set1):
-            set1.append(v)
-        elif v in np.array(dataset.set2):
-            set2.append(v)
-    x1, y1 = np.array(set1)[:, 0], np.array(set1)[:, 1]
-    x2, y2 = np.array(set2)[:, 0], np.array(set2)[:, 1]
+    x1, y1 = vectors[:, 0], vectors[:, 1]
 
     plt.figure(figsize=(6, 6))
-    plt.scatter(x1, y1, marker="x", color="blue")
-    plt.scatter(x2, y2, marker="o", color="red")
+    plt.scatter(x1, y1)
+    # plt.scatter(x2, y2, marker="o", color="red")
     plt.savefig(f"./outputs/{filename}.png")
     plt.clf()
 
 
 def get_support_vectors(clf, filename):
-    support_vectors = clf.support_vectors_
-    plot_support_vectors(support_vectors, filename)
+    support_indices = clf.support_
+    vectors = []
+    for i in support_indices:
+        vectors.append(x[i])
+    plot_support_vectors(np.array(vectors), filename)
 
 
-def linear_svm():
+def linear_svm(C_range):
     # with a strong emphasis on the samples on the "right" side
-    linear = svm.SVC(kernel="linear", gamma=0.1)
+    # "C" is the penalty parameter - smaller C creates small margin and larger C creates larger margin
+    C_value = 0.01
+    while C_value <= C_range:
+        linear = svm.SVC(kernel="linear", C=C_value)
+        plot_decision_function(linear, f"C={C_value}")
+        C_value *= 10
+
+
+# svm custom kernel - the product of the first component of both vectors, omitting the second component
+def custom_kernel():
+    def kernel_fun(X, Y):  # todo: o to chodziło??
+        first_X = np.array([[i[0] for i in X]]).T
+        first_Y = np.array([[i[0] for i in Y]])
+
+        return np.dot(first_X, first_Y)
+
+    custom = svm.SVC(kernel=kernel_fun)
+    plot_decision_function(custom, "custom kernel")
+
+
+# classic RBF (Radial Basis Function) kernel
+def rbf_kernel_classic():
+    # we can use "rbf" kernel from library which uses the gamma parameter instead of the sigma from the given formula
+    # gamma = 1/(2*sigma^2)
+    # so, if we want to use sigma = 0.5, 0.7, 1, 2 we have to use gamma = 1/8, 1/2, 1, 2 instead
+    gamma_values = [0.125, 0.5, 1, 2]
+    for g in gamma_values:
+        gamma = svm.SVC(kernel='rbf', gamma=g)
+        plot_decision_function(gamma, f"Gamma={g}")
 
 
 if __name__ == "__main__":
@@ -105,11 +131,15 @@ if __name__ == "__main__":
     svc = svm.SVC()
     svc_linear = svm.SVC(kernel="linear")
 
+    print("decision boundary for classic svm...")
     plot_decision_function(svc, "Decision_boundary")
+    print("Done. Linear svm...")
     plot_decision_function(svc_linear, "Decision_boundary_linear")
 
     # get support vectors
+    print("Done. Support vectors for classic version...")
     get_support_vectors(svc, "sv.png")
+    print("Done. Support vectors for linear version...")
     get_support_vectors(svc_linear, "sv_linear.png")
 
     # margin width between classes
@@ -118,4 +148,13 @@ if __name__ == "__main__":
 
     # step 2
     # linear svm version
+    print("Linear versions for range 0.01 - 10000...")
+    linear_svm(10_000)  # todo: wykresy są do kitu
 
+    # custom kernel version
+    print("Custom kernel...")
+    custom_kernel()
+
+    # RBF kernel
+    print("RBF kernel...")
+    rbf_kernel_classic()

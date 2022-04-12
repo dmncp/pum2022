@@ -120,6 +120,49 @@ def rbf_kernel_classic():
         plot_decision_function(gamma, f"Gamma={g}")
 
 
+def rbf_kernel_angular():
+    def kernel_fun(X, Y):
+        distance = np.sum((Y - X[:, np.newaxis])**2, axis=-1)
+        R_matrix = np.zeros(shape=distance.shape)
+        R_matrix.fill(R)
+        comparing_matrix = np.less(distance, R_matrix)
+
+        return comparing_matrix * 1
+
+    R_values = [0.5, 1, 1.5, 2, 2.5, 5]
+    for R in R_values:
+        angular = svm.SVC(kernel=kernel_fun)
+        plot_decision_function(angular, f"R={R}")
+
+
+def rbf_kernel_linear():
+    def kernel_fun(X, Y):
+        distance = np.sum((Y - X[:, np.newaxis])**2, axis=-1)
+        R_matrix = np.zeros(shape=distance.shape)
+        R_matrix.fill(R)
+        comparing_matrix = np.subtract(R, distance)
+        comparing_matrix = comparing_matrix / R
+
+        is_less = np.less(distance, R_matrix) * 1
+
+        return np.multiply(comparing_matrix, is_less)
+
+    R_values = [0.5, 1, 1.5, 2, 2.5, 5]
+    for R in R_values:
+        rbf_linear = svm.SVC(kernel=kernel_fun)
+        plot_decision_function(rbf_linear, f"linearR={R}")
+
+
+def rbf_kernel_angle():
+    def kernel_fun(X, Y):
+        cosinus = np.cos(X, Y)
+        print(cosinus)
+        return np.dot(X, Y.T)
+
+    rbf_angle = svm.SVC(kernel=kernel_fun)
+    plot_decision_function(rbf_angle, f"angleRBF")
+
+
 if __name__ == "__main__":
     dataset = get_dataset()
     dataset.save("starting_dataset")
@@ -158,3 +201,15 @@ if __name__ == "__main__":
     # RBF kernel
     print("RBF kernel...")
     rbf_kernel_classic()
+
+    # angular RBF
+    print("RBF kernel linear...")
+    rbf_kernel_angular()  # todo: no patrząc po wykresach raczej jest źle
+
+    # linear RBF function
+    print("Linear RBF...")
+    rbf_kernel_linear()
+
+    # RBF angle
+    print("RBF angle")
+    rbf_kernel_angle()

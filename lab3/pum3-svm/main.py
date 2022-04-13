@@ -122,7 +122,7 @@ def rbf_kernel_classic():
 
 def rbf_kernel_angular():
     def kernel_fun(X, Y):
-        distance = np.sum((Y - X[:, np.newaxis])**2, axis=-1)
+        distance = np.sum((Y - X[:, np.newaxis]) ** 2, axis=-1)  # todo nie brakuje pierwiastka???
         R_matrix = np.zeros(shape=distance.shape)
         R_matrix.fill(R)
         comparing_matrix = np.less(distance, R_matrix)
@@ -137,7 +137,7 @@ def rbf_kernel_angular():
 
 def rbf_kernel_linear():
     def kernel_fun(X, Y):
-        distance = np.sum((Y - X[:, np.newaxis])**2, axis=-1)
+        distance = np.sum((Y - X[:, np.newaxis]) ** 2, axis=-1)  # todo nie brakuje pierwiastka???
         R_matrix = np.zeros(shape=distance.shape)
         R_matrix.fill(R)
         comparing_matrix = np.subtract(R, distance)
@@ -155,9 +155,16 @@ def rbf_kernel_linear():
 
 def rbf_kernel_angle():
     def kernel_fun(X, Y):
-        cosinus = np.cos(X, Y)
-        print(cosinus)
-        return np.dot(X, Y.T)
+        x_size = X.shape[0]
+        y_size = Y.shape[0]
+        cosines = np.zeros(shape=(x_size, y_size))
+
+        print(f"counting for ({x_size}, {y_size})")
+        for i in range(x_size):
+            for j in range(y_size):
+                cosines[i][j] = np.dot(X[i], Y[j]) / (np.linalg.norm(X[i]) * np.linalg.norm(Y[j]))
+
+        return cosines
 
     rbf_angle = svm.SVC(kernel=kernel_fun)
     plot_decision_function(rbf_angle, f"angleRBF")
@@ -170,6 +177,7 @@ if __name__ == "__main__":
     # step 1: find decision boundary
     x = np.array(dataset.set1 + dataset.set2)
     y = [1] * len(dataset.set1) + [-1] * len(dataset.set2)
+    print(f"start X = {x.shape}, start y = {np.array(y).shape}")
 
     svc = svm.SVC()
     svc_linear = svm.SVC(kernel="linear")
@@ -203,7 +211,7 @@ if __name__ == "__main__":
     rbf_kernel_classic()
 
     # angular RBF
-    print("RBF kernel linear...")
+    print("RBF kernel angular...")
     rbf_kernel_angular()  # todo: no patrząc po wykresach raczej jest źle
 
     # linear RBF function

@@ -45,7 +45,7 @@ def plot_decision_function(classifier, title):
 
     # Put the result into a color plot
     Z = Z.reshape(xx.shape)
-    plt.contourf(xx, yy, Z, cmap=cm, alpha=0.8)
+    plt.contourf(xx, yy, Z, cmap=cm, alpha=0.8, levels=200)
 
     # Plot the training points
     plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright, edgecolors="k")
@@ -122,7 +122,7 @@ def rbf_kernel_classic():
 
 def rbf_kernel_angular():
     def kernel_fun(X, Y):
-        distance = np.sum((Y - X[:, np.newaxis]) ** 2, axis=-1)  # todo nie brakuje pierwiastka???
+        distance = np.sum((Y - X[:, np.newaxis]) ** 2, axis=-1)
         R_matrix = np.zeros(shape=distance.shape)
         R_matrix.fill(R)
         comparing_matrix = np.less(distance, R_matrix)
@@ -137,7 +137,7 @@ def rbf_kernel_angular():
 
 def rbf_kernel_linear():
     def kernel_fun(X, Y):
-        distance = np.sum((Y - X[:, np.newaxis]) ** 2, axis=-1)  # todo nie brakuje pierwiastka???
+        distance = np.sum((Y - X[:, np.newaxis]) ** 2, axis=-1)
         R_matrix = np.zeros(shape=distance.shape)
         R_matrix.fill(R)
         comparing_matrix = np.subtract(R, distance)
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     # step 2
     # linear svm version
     print("Linear versions for range 0.01 - 10000...")
-    linear_svm(10_000)  # todo: wykresy są do kitu
+    linear_svm(10_000)
 
     # custom kernel version
     print("Custom kernel...")
@@ -212,7 +212,7 @@ if __name__ == "__main__":
 
     # angular RBF
     print("RBF kernel angular...")
-    rbf_kernel_angular()  # todo: no patrząc po wykresach raczej jest źle
+    rbf_kernel_angular()
 
     # linear RBF function
     print("Linear RBF...")
